@@ -2,7 +2,11 @@ services:
   - type: web
     name: mercado-local
     env: docker
-    plan: free
+    plan: starter
+    disk:
+      name: mercado_uploads
+      mountPath: /var/www/html/storage/app/public
+      sizeGB: 1
     envVars:
       - key: APP_KEY
         generateValue: true
@@ -19,6 +23,6 @@ services:
 
 databases:
   - name: mercado-local-db
-    plan: free
+    plan: starter
     databaseName: mercado_local
     user: mercado_user

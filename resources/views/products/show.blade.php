@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $product->name }} - Mercado Local</title>
+    <title>{{ $product->name }} - Mercado Palosanteño</title>
     
     <!-- SEO Meta Tags -->
     <meta property="og:title" content="{{ $product->name }}" />

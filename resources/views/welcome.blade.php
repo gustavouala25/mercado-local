@@ -1,143 +1,258 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mercado Local - Productos Artesanales</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
+<x-public-layout>
 
     <!-- HERO SECTION -->
-    <div class="bg-indigo-600 w-full shadow-lg">
-        
-        <!-- NAVIGATION -->
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <!-- Left: Logo -->
-            <div class="flex items-center gap-2">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                <span class="text-2xl font-bold text-white tracking-tight">Mercado Local</span>
-            </div>
+    <div class="py-16 md:py-24 relative overflow-hidden">
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-0 left-0 w-64 h-64 bg-neu-base rounded-full shadow-neu-out opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-neu-base rounded-full shadow-neu-out opacity-50 translate-x-1/3 translate-y-1/3"></div>
 
-            <!-- Right: Auth Links -->
-            <div class="flex items-center gap-6">
-                @if (Route::has('login'))
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="text-white hover:text-indigo-200 font-semibold transition-colors">Mi Panel</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-white hover:text-indigo-200 font-semibold transition-colors">Soy Vendedor / Entrar</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-2 px-4 rounded-full transition-colors shadow-md">Registrarse</a>
-                        @endif
-                    @endauth
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="inline-block p-4 rounded-full shadow-neu-out mb-6 bg-neu-base">
+                <span class="text-3xl">🛍️</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold text-neu-text-dark mb-6 leading-tight">
+                @if(isset($currentCategory))
+                    Explorando: <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-600">{{ $currentCategory->name }}</span>
+                @else
+                    Descubre lo Mejor de <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-600">Tu Comunidad</span>
                 @endif
-            </div>
-        </nav>
-
-        <!-- HERO CONTENT -->
-        <div class="container mx-auto px-4 text-center py-16">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                Descubre lo Mejor de <br/><span class="text-indigo-200">Tu Comunidad</span>
             </h1>
-            <p class="text-lg md:text-xl text-indigo-100 max-w-2xl mx-auto mb-10">
-                Apoya a los emprendedores locales y encuentra productos únicos cerca de ti.
+            <p class="text-lg md:text-xl text-neu-text max-w-2xl mx-auto mb-10">
+                Conectando a Palo Santo en un solo lugar.
             </p>
 
             <!-- Search Form -->
-            <div class="max-w-4xl mx-auto bg-white p-2 rounded-2xl shadow-2xl transform -translate-y-0">
-                <form action="{{ route('market.index') }}" method="GET" class="flex flex-col md:flex-row gap-2">
-                    <div class="w-full md:w-1/3">
-                        <select name="category" class="w-full h-14 border-transparent focus:border-indigo-500 focus:ring-0 text-gray-700 rounded-xl bg-gray-50 px-4 font-medium">
+            <div class="max-w-3xl mx-auto" x-data="{ searchOpen: false }" @click.outside="searchOpen = false">
+                <form action="{{ route('market.index') }}" method="GET" class="flex flex-col md:flex-row gap-3 items-center justify-center">
+                    
+                    <!-- Category Select (Desktop) -->
+                    <div class="relative w-full md:w-1/4 hidden md:block">
+                        <select name="category" class="w-full h-14 bg-neu-base border-none rounded-2xl shadow-neu-out text-neu-text px-4 focus:ring-0 focus:shadow-neu-in transition-shadow appearance-none cursor-pointer">
                             <option value="">Todas las Categorías</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->slug }}" {{ request('category') == $category->slug ? 'selected' : '' }}>
-                                    {{ $category->icon }} {{ $category->name }}
+                                    {{ $category->name }}
                                 </option>
                             @endforeach
                         </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-neu-text">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
                     </div>
-                    <div class="w-full md:w-2/3 flex gap-2">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="¿Qué estás buscando hoy?" class="w-full h-14 border-transparent focus:border-indigo-500 focus:ring-0 text-gray-700 rounded-xl bg-gray-50 px-4">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-indigo-500/30">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </button>
+
+                    <!-- Search Input (Unified Bar) -->
+                    <div class="relative w-full md:w-2/4 flex items-center gap-2">
+                        <div class="relative w-full flex items-center bg-neu-base rounded-full shadow-neu-in px-4 h-14">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request('search') }}" 
+                                   placeholder="¿Qué estás buscando hoy?" 
+                                   class="w-full bg-transparent border-none text-neu-text placeholder-gray-400 focus:ring-0 p-0"
+                                   @focus="searchOpen = true">
+                            <button type="submit" class="ml-2 p-2 text-orange-500 hover:text-orange-600 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </button>
+                        </div>
+
+                        <!-- Clear Button -->
+                        @if(request()->filled('search') || request()->filled('category') || request()->filled('sort'))
+                            <a href="{{ route('market.index') }}" class="w-14 h-14 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-red-500 hover:text-red-600 active:shadow-neu-pressed transition-all flex-shrink-0" title="Limpiar filtros">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </a>
+                        @endif
+                    </div>
+
+                    <!-- Sort Select -->
+                    <div class="relative w-full md:w-1/4 hidden md:block">
+                        <select name="sort" class="w-full h-14 bg-neu-base border-none rounded-2xl shadow-neu-out text-neu-text px-4 focus:ring-0 focus:shadow-neu-in transition-shadow appearance-none cursor-pointer" onchange="this.form.submit()">
+                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Más Recientes</option>
+                            <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Menor Precio</option>
+                            <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Mayor Precio</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-neu-text">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+                        </div>
                     </div>
                 </form>
+
+                <!-- Mobile Category Chips -->
+                <div x-show="searchOpen" 
+                     x-transition 
+                     class="flex md:hidden overflow-x-auto gap-3 py-4 px-1 no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                    <a href="{{ route('market.index', array_merge(request()->except('category', 'page'), ['category' => null])) }}" 
+                       class="whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all {{ !request('category') ? 'bg-neu-base shadow-neu-in text-orange-500' : 'bg-neu-base shadow-neu-out text-neu-text' }}">
+                        Todas
+                    </a>
+                    @foreach($categories as $category)
+                        <a href="{{ route('market.index', array_merge(request()->except('category', 'page'), ['category' => $category->slug])) }}" 
+                           class="whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all {{ request('category') == $category->slug ? 'bg-neu-base shadow-neu-in text-orange-500' : 'bg-neu-base shadow-neu-out text-neu-text' }}">
+                            {{ $category->name }}
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="container mx-auto px-4 py-16 flex-grow">
+    <!-- CATEGORIES GRID (Optional, visual only if needed, or integrated into search) -->
+    <!-- Keeping it simple as per request, focusing on products -->
 
-        <!-- Featured Products Section -->
-        @if($featuredProducts->count() > 0)
-        <section class="mb-20">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🔥</span>
-                <h2 class="text-3xl font-bold text-gray-900">Productos Destacados</h2>
-            </div>
+    <!-- FEATURED PRODUCTS -->
+    <!-- FEATURED PRODUCTS -->
+    @if($featuredProducts->count() > 0)
+    <section class="mb-12" 
+             x-data="{ 
+                 scrollInterval: null,
+                 start() {
+                     this.scrollInterval = setInterval(() => {
+                         $refs.carousel.scrollLeft += 1;
+                     }, 20);
+                 },
+                 stop() {
+                     clearInterval(this.scrollInterval);
+                 }
+             }"
+             x-init="start()"
+             @mouseenter="stop()"
+             @mouseleave="start()">
+             
+        <div class="flex items-center gap-3 mb-6 px-4">
+            <div class="h-8 w-1 bg-orange-500 rounded-full"></div>
+            <h2 class="text-xl md:text-2xl font-bold text-neu-text-dark">Destacados</h2>
+            <div class="h-1 w-12 bg-orange-400 rounded-full"></div>
+        </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                @foreach($featuredProducts as $product)
-                <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-yellow-400 relative group h-full flex flex-col overflow-hidden transform hover:-translate-y-1">
-                    <div class="absolute top-4 right-0 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-l-full z-10 shadow-sm">
-                        DESTACADO
+        <!-- Carousel Container -->
+        <div x-ref="carousel" 
+             class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 px-4 pb-4">
+            @foreach($featuredProducts as $product)
+            <!-- Product Card -->
+            <div class="flex-shrink-0 w-[85%] md:w-64 snap-center bg-neu-base rounded-3xl shadow-neu-out p-3 md:p-4 flex flex-col h-full transform transition-transform duration-300">
+                <!-- Image Container -->
+                <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
+                    <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-full h-full object-cover">
+                    <div class="absolute top-2 left-2 bg-neu-base text-orange-500 text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full shadow-neu-out">
+                        TOP
                     </div>
-                    <div class="aspect-w-4 aspect-h-3 w-full bg-gray-100 relative overflow-hidden">
-                        <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
-                             alt="{{ $product->name }}" 
-                             class="w-full h-64 object-cover object-center group-hover:scale-110 transition-transform duration-500">
-                        <!-- Overlay on hover -->
-                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                    </div>
-                    <div class="p-6 flex flex-col flex-grow">
-                        <div class="mb-2">
-                            <p class="text-xs font-bold text-indigo-600 uppercase tracking-wide">{{ $product->category->name ?? 'Varios' }}</p>
-                            <h3 class="text-xl font-bold text-gray-900 truncate leading-tight">{{ $product->name }}</h3>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4 flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            {{ $product->vendor->name ?? 'Vendedor Local' }}
+                    <button x-data @click.prevent="
+                        if (navigator.share) {
+                            navigator.share({
+                                title: '{{ $product->name }}',
+                                text: 'Mira este producto en Mercado Palosanteño',
+                                url: '{{ route('products.show', $product->slug) }}'
+                            });
+                        } else {
+                            navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
+                            alert('Enlace copiado al portapapeles');
+                        }
+                    " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-grow flex flex-col">
+                    <div class="mb-2">
+                        <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">
+                            {{ $product->category->name ?? 'Varios' }} • 
+                            @if($product->vendor)
+                                <a href="{{ route('vendor.show', $product->vendor) }}" class="hover:text-orange-500 hover:underline transition-colors">
+                                    {{ $product->vendor->name }}
+                                </a>
+                            @endif
                         </p>
-                        
-                        <div class="mt-auto pt-4 border-t border-gray-100">
-                            <div class="flex items-end justify-between mb-4">
-                                <span class="text-2xl font-bold text-gray-900">${{ number_format($product->price, 2) }}</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <a href="{{ route('products.show', $product->slug) }}" class="block w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-center font-semibold py-2.5 px-4 rounded-xl transition-colors">
-                                    Ver Detalle
-                                </a>
-                                <a href="{{ $product->whatsapp_link }}" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center font-semibold py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                    WhatsApp
-                                </a>
-                            </div>
-                        </div>
+                        <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
+                    </div>
+                    
+                    <div class="mt-auto pt-2 md:pt-4 flex items-center justify-between">
+                        <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
+                        <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
+                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
                     </div>
                 </div>
-                @endforeach
             </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
-            <div class="mt-12">
-                {{ $regularProducts->links() }}
+    <!-- CATEGORY BLOCKS -->
+    @foreach($categories as $category)
+    <section class="mb-12">
+        <div class="flex items-center justify-between mb-6 px-4">
+            <div class="flex items-center gap-3">
+                <div class="h-8 w-1 bg-orange-500 rounded-full"></div>
+                <h2 class="text-xl md:text-2xl font-bold text-neu-text-dark">{{ $category->name }}</h2>
             </div>
-            @else
-            <div class="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
-                <p class="text-gray-500 text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
-                <a href="{{ route('market.index') }}" class="text-indigo-600 hover:text-indigo-800 font-semibold mt-4 inline-block">Ver todos los productos</a>
+            <a href="{{ route('market.index', ['category' => $category->slug]) }}" class="text-sm font-bold text-orange-500 hover:text-orange-600 transition-colors flex items-center gap-1">
+                Ver todo
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+        </div>
+
+        <!-- Carousel Container -->
+        <div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 px-4 pb-4">
+            @foreach($category->products as $product)
+            <!-- Product Card -->
+            <div class="flex-shrink-0 w-[85%] md:w-64 snap-center bg-neu-base rounded-3xl shadow-neu-out p-3 md:p-4 flex flex-col h-full transform transition-transform duration-300">
+                <!-- Image Container -->
+                <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
+                    <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-full h-full object-cover">
+                    <button x-data @click.prevent="
+                        if (navigator.share) {
+                            navigator.share({
+                                title: '{{ $product->name }}',
+                                text: 'Mira este producto en Mercado Palosanteño',
+                                url: '{{ route('products.show', $product->slug) }}'
+                            });
+                        } else {
+                            navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
+                            alert('Enlace copiado al portapapeles');
+                        }
+                    " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-grow flex flex-col">
+                    <div class="mb-2">
+                        <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
+                    </div>
+                    
+                    <div class="mt-auto pt-2 md:pt-4 flex items-center justify-between">
+                        <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
+                        <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
+                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
             </div>
-            @endif
-        </section>
+            @endforeach
+        </div>
+    </section>
+    @endforeach
 
-    </main>
+    <!-- NO CATEGORIES STATE -->
+    @if($categories->isEmpty() && $featuredProducts->isEmpty())
+    <div class="flex flex-col items-center justify-center py-20">
+        <div class="bg-neu-base rounded-full p-8 shadow-neu-out mb-6">
+            <svg class="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-neu-text-dark mb-2">No encontramos productos</h3>
+        <p class="text-neu-text mb-8">Parece que aún no hay productos activos en ninguna categoría.</p>
+    </div>
+    @endif
 
-    @include('layouts.footer')
-
-</body>
-</html>
+</x-public-layout>
