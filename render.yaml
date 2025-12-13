@@ -9,7 +9,7 @@ services:
   - type: web
     name: mercado-local
     runtime: docker
-    plan: starter         # El web service sí lo dejamos pago ($7) desde el inicio.
+    plan: starter         
     region: oregon
     numInstances: 1
     healthCheckPath: /
@@ -27,7 +27,7 @@ services:
       - key: APP_URL
         sync: false
       - key: APP_KEY
-        generate: true    # <--- AQUÍ ESTABA EL ERROR (Corregido)
+        generate: true    
       - key: DATABASE_URL
         fromDatabase:
           name: mercado-db
