@@ -1,9 +1,15 @@
+databases:
+  - name: mercado-db
+    plan: basic
+    region: oregon
+    databaseName: mercado_db
+    user: mercado_user
+
 services:
-  # 1. El Servidor Web (Tu Laravel)
   - type: web
     name: mercado-local
     runtime: docker
-    plan: starter      # Para el servicio web, 'starter' SÍ sigue funcionando.
+    plan: starter
     region: oregon
     numInstances: 1
     healthCheckPath: /
@@ -22,7 +28,9 @@ services:
         sync: false
       - key: APP_KEY
         generate: true
-      - key: DATABASE_URL
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
         fromDatabase:
           name: mercado-db
           property: connectionString
@@ -30,15 +38,3 @@ services:
         value: database
       - key: LOG_CHANNEL
         value: stderr
-
-  # 2. La Base de Datos (Postgres)
-  - type: psql
-    name: mercado-db
-    plan: basic        # <--- ESTE FUE EL CAMBIO (Antes era 'starter')
-    region: oregon
-    databaseName: mercado_db
-    user: mercado_user
-
-databases:
-  - name: mercado-db
-    plan: basic        # <--- AQUÍ TAMBIÉN CAMBIALO
