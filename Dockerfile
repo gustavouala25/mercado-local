@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 # 1. Instalar SOLO dependencias de PHP (Ya no necesitamos Node ni NPM)
-# 1. Instalar SOLO dependencias de PHP (Ya no necesitamos Node ni NPM)
+
 RUN apt-get update && apt-get install -y     git     curl     libpng-dev     libonig-dev     libxml2-dev     libzip-dev     libpq-dev     libicu-dev     zip     unzip     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar extensiones
