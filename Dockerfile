@@ -1,6 +1,7 @@
 FROM php:8.4-apache
 
 # 1. Instalar dependencias del sistema
+# Agregamos libpng-dev y libzip-dev que son necesarias para gd y zip
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -8,10 +9,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libpq-dev \
     libicu-dev \
+    libpng-dev \
+    libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar extensiones de PHP
-RUN docker-php-ext-install pdo_pgsql bcmath intl
+# Agregamos gd y zip que faltaban y son requeridas
+RUN docker-php-ext-install pdo_pgsql bcmath intl gd zip
 
 # 3. Configurar DocumentRoot de Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
