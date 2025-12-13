@@ -14,6 +14,10 @@
 
         <!-- Scripts -->
         <script src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <style>
+            [x-cloak] { display: none !important; }
+        </style>
         <script>
             tailwind.config = {
                 theme: {
@@ -51,7 +55,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="pb-24">
                 {{ $slot }}
             </main>
         </div>

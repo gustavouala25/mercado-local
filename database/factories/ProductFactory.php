@@ -19,15 +19,24 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->words(3, true);
+        $name = fake()->randomElement([
+            'Coca Cola 1.5L', 'Mate de Calabaza', 'Remera de Algodón', 'Cargador USB-C', 
+            'Auriculares Bluetooth', 'Zapatillas Deportivas', 'Libro Best Seller', 
+            'Juego de Mesa', 'Martillo', 'Shampoo 400ml', 'Café Tostado', 'Galletitas Variadas',
+            'Smartwatch', 'Mochila Urbana', 'Pelota de Fútbol', 'Lámpara LED', 
+            'Silla de Oficina', 'Teclado Mecánico', 'Mouse Inalámbrico', 'Monitor 24"',
+            'Botella de Agua', 'Toalla de Baño', 'Sábana 2 Plazas', 'Almohada Viscoelástica',
+            'Cerveza Artesanal', 'Vino Malbec', 'Queso Cremoso', 'Jamón Cocido'
+        ]);
+
         return [
             'vendor_id' => Vendor::factory(),
             'category_id' => Category::factory(),
-            'name' => ucfirst($name),
-            'slug' => Str::slug($name),
+            'name' => $name,
+            'slug' => Str::slug($name) . '-' . Str::random(5), // Ensure uniqueness
             'description' => fake()->paragraph(),
-            'price' => fake()->randomFloat(2, 10, 1000),
-            'image_path' => 'products/dummy.jpg', 
+            'price' => fake()->randomFloat(2, 1000, 50000),
+            'image_path' => 'https://placehold.co/400x400/orange/white?text=Producto', 
             'is_featured' => fake()->boolean(20), // 20% chance of being featured
             'is_active' => true,
             'views' => fake()->numberBetween(0, 1000),

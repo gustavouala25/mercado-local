@@ -1,7 +1,7 @@
 <x-public-layout>
 
     <!-- HERO SECTION -->
-    <div class="py-16 md:py-24 relative overflow-hidden">
+    <div class="py-16 md:py-24 pb-24 relative overflow-hidden">
         <!-- Decorative Background Elements -->
         <div class="absolute top-0 left-0 w-64 h-64 bg-neu-base rounded-full shadow-neu-out opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
         <div class="absolute bottom-0 right-0 w-96 h-96 bg-neu-base rounded-full shadow-neu-out opacity-50 translate-x-1/3 translate-y-1/3"></div>
@@ -100,22 +100,7 @@
     <!-- FEATURED PRODUCTS -->
     <!-- FEATURED PRODUCTS -->
     @if($featuredProducts->count() > 0)
-    <section class="mb-12" 
-             x-data="{ 
-                 scrollInterval: null,
-                 start() {
-                     this.scrollInterval = setInterval(() => {
-                         $refs.carousel.scrollLeft += 1;
-                     }, 20);
-                 },
-                 stop() {
-                     clearInterval(this.scrollInterval);
-                 }
-             }"
-             x-init="start()"
-             @mouseenter="stop()"
-             @mouseleave="start()">
-             
+    <section class="mb-12">
         <div class="flex items-center gap-3 mb-6 px-4">
             <div class="h-8 w-1 bg-orange-500 rounded-full"></div>
             <h2 class="text-xl md:text-2xl font-bold text-neu-text-dark">Destacados</h2>
@@ -123,56 +108,71 @@
         </div>
 
         <!-- Carousel Container -->
-        <div x-ref="carousel" 
-             class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 px-4 pb-4">
+        <div class="flex overflow-x-auto snap-x snap-proximity scroll-smooth no-scrollbar gap-4 px-4 pb-4">
             @foreach($featuredProducts as $product)
             <!-- Product Card -->
-            <div class="flex-shrink-0 w-[85%] md:w-64 snap-center bg-neu-base rounded-3xl shadow-neu-out p-3 md:p-4 flex flex-col h-full transform transition-transform duration-300">
-                <!-- Image Container -->
-                <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
-                    <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
-                         alt="{{ $product->name }}" 
-                         class="w-full h-full object-cover">
-                    <div class="absolute top-2 left-2 bg-neu-base text-orange-500 text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full shadow-neu-out">
-                        TOP
-                    </div>
-                    <button x-data @click.prevent="
-                        if (navigator.share) {
-                            navigator.share({
-                                title: '{{ $product->name }}',
-                                text: 'Mira este producto en Mercado Palosanteño',
-                                url: '{{ route('products.show', $product->slug) }}'
-                            });
-                        } else {
-                            navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
-                            alert('Enlace copiado al portapapeles');
-                        }
-                    " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="flex-shrink-0 w-[85%] sm:w-80 snap-center bg-neu-base rounded-3xl shadow-neu-out flex flex-col h-full transform transition-transform duration-300 overflow-hidden">
+                <!-- Vendor Header -->
+                @if($product->vendor)
+                <a href="{{ route('vendor.show', $product->vendor) }}" class="bg-gray-50 px-4 py-2 flex items-center gap-2 hover:bg-orange-50 transition-colors border-b border-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="text-xs md:text-sm font-bold text-gray-700 truncate">{{ $product->vendor->name }}</span>
+                </a>
+                @endif
 
-                <!-- Content -->
-                <div class="flex-grow flex flex-col">
-                    <div class="mb-2">
-                        <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">
-                            {{ $product->category->name ?? 'Varios' }} • 
+                <div class="p-3 md:p-4 flex flex-col h-full">
+                    <!-- Image Container -->
+                    <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
+                        <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
+                             alt="{{ $product->name }}" 
+                             loading="eager"
+                             decoding="async"
+                             class="w-full h-full object-cover aspect-square">
+                        <div class="absolute top-2 left-2 bg-neu-base text-orange-500 text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full shadow-neu-out">
+                            TOP
+                        </div>
+                        <button x-data @click.prevent="
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: '{{ $product->name }}',
+                                    text: 'Mira este producto en Mercado Palosanteño',
+                                    url: '{{ route('products.show', $product->slug) }}'
+                                });
+                            } else {
+                                navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
+                                alert('Enlace copiado al portapapeles');
+                            }
+                        " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow flex flex-col">
+                        <div class="mb-2">
+                            <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">
+                                {{ $product->category->name ?? 'Varios' }}
+                            </p>
+                            <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
+                        </div>
+                        
+                        <div class="mt-auto pt-2 md:pt-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
+                                <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
+                                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </a>
+                            </div>
                             @if($product->vendor)
-                                <a href="{{ route('vendor.show', $product->vendor) }}" class="hover:text-orange-500 hover:underline transition-colors">
-                                    {{ $product->vendor->name }}
+                                <a href="{{ route('vendor.show', $product->vendor) }}" class="text-xs text-indigo-600 hover:underline font-semibold mt-3 block text-center">
+                                    Ver más de este negocio &rarr;
                                 </a>
                             @endif
-                        </p>
-                        <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
-                    </div>
-                    
-                    <div class="mt-auto pt-2 md:pt-4 flex items-center justify-between">
-                        <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
-                        <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
-                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,41 +199,60 @@
         <div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 px-4 pb-4">
             @foreach($category->products as $product)
             <!-- Product Card -->
-            <div class="flex-shrink-0 w-[85%] md:w-64 snap-center bg-neu-base rounded-3xl shadow-neu-out p-3 md:p-4 flex flex-col h-full transform transition-transform duration-300">
-                <!-- Image Container -->
-                <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
-                    <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
-                         alt="{{ $product->name }}" 
-                         class="w-full h-full object-cover">
-                    <button x-data @click.prevent="
-                        if (navigator.share) {
-                            navigator.share({
-                                title: '{{ $product->name }}',
-                                text: 'Mira este producto en Mercado Palosanteño',
-                                url: '{{ route('products.show', $product->slug) }}'
-                            });
-                        } else {
-                            navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
-                            alert('Enlace copiado al portapapeles');
-                        }
-                    " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="flex-shrink-0 w-[85%] md:w-64 snap-center bg-neu-base rounded-3xl shadow-neu-out flex flex-col h-full transform transition-transform duration-300 overflow-hidden">
+                <!-- Vendor Header -->
+                @if($product->vendor)
+                <a href="{{ route('vendor.show', $product->vendor) }}" class="bg-gray-50 px-4 py-2 flex items-center gap-2 hover:bg-orange-50 transition-colors border-b border-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="text-xs md:text-sm font-bold text-gray-700 truncate">{{ $product->vendor->name }}</span>
+                </a>
+                @endif
 
-                <!-- Content -->
-                <div class="flex-grow flex flex-col">
-                    <div class="mb-2">
-                        <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
+                <div class="p-3 md:p-4 flex flex-col h-full">
+                    <!-- Image Container -->
+                    <div class="relative aspect-square mb-3 md:mb-4 rounded-2xl overflow-hidden shadow-neu-in">
+                        <img src="{{ $product->image_path ? asset('storage/' . $product->image_path) : 'https://placehold.co/600x400?text=Sin+Foto' }}" 
+                             alt="{{ $product->name }}" 
+                             class="w-full h-full object-cover">
+                        <button x-data @click.prevent="
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: '{{ $product->name }}',
+                                    text: 'Mira este producto en Mercado Palosanteño',
+                                    url: '{{ route('products.show', $product->slug) }}'
+                                });
+                            } else {
+                                navigator.clipboard.writeText('{{ route('products.show', $product->slug) }}');
+                                alert('Enlace copiado al portapapeles');
+                            }
+                        " class="absolute top-2 right-2 bg-white/70 backdrop-blur rounded-full p-2 shadow-sm hover:bg-white transition-colors z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                            </svg>
+                        </button>
                     </div>
-                    
-                    <div class="mt-auto pt-2 md:pt-4 flex items-center justify-between">
-                        <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
-                        <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
-                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </a>
+
+                    <!-- Content -->
+                    <div class="flex-grow flex flex-col">
+                        <div class="mb-2">
+                            <h3 class="text-xs md:text-lg font-bold text-neu-text-dark leading-tight line-clamp-2">{{ $product->name }}</h3>
+                        </div>
+                        
+                        <div class="mt-auto pt-2 md:pt-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm md:text-xl font-bold text-neu-text-dark">${{ number_format($product->price, 2) }}</span>
+                                <a href="{{ route('products.show', $product->slug) }}" class="w-8 h-8 md:w-10 md:h-10 bg-neu-base rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 active:shadow-neu-pressed transition-all">
+                                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </a>
+                            </div>
+                            @if($product->vendor)
+                                <a href="{{ route('vendor.show', $product->vendor) }}" class="text-xs text-indigo-600 hover:underline font-semibold mt-3 block text-center">
+                                    Ver más de este negocio &rarr;
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -255,4 +274,5 @@
     </div>
     @endif
 
+    <x-bottom-nav />
 </x-public-layout>

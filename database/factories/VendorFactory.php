@@ -18,7 +18,13 @@ class VendorFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->company();
+        $name = fake()->unique()->randomElement([
+            'Kiosco El Paso', 'Modas Juana', 'TecnoFix', 'Almacén Don Pepe', 
+            'Librería El Estudiante', 'Ferretería Central', 'Juguetería Mágica', 
+            'Farmacia Salud', 'Deportes Total', 'Panadería La Espiga',
+            'ElectroHogar', 'Zapatería Pisadas', 'Muebles Confort', 'PetShop Amigos'
+        ]);
+
         return [
             'user_id' => User::factory(),
             'name' => $name,

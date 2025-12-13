@@ -62,15 +62,15 @@
                     </div>
 
                     <!-- Mobile User Icon -->
-                    <div class="flex md:hidden">
+                    <div class="flex md:hidden absolute top-4 right-4">
                          @auth
-                            <a href="{{ url('/dashboard') }}" class="w-10 h-10 bg-white/50 backdrop-blur-sm rounded-full shadow-neu-out flex items-center justify-center text-orange-500 hover:text-orange-600 transition-colors">
+                            <a href="{{ url('/dashboard') }}" class="bg-white/50 backdrop-blur rounded-full p-2 shadow-sm text-neu-text-dark hover:text-orange-500 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </a>
                         @else
-                            <a href="{{ route('login') }}" class="w-10 h-10 bg-white/50 backdrop-blur-sm rounded-full shadow-neu-out flex items-center justify-center text-neu-text hover:text-orange-500 transition-colors">
+                            <a href="{{ route('login') }}" class="bg-white/50 backdrop-blur rounded-full p-2 shadow-sm text-neu-text-dark hover:text-orange-500 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
