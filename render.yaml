@@ -1,6 +1,6 @@
 databases:
   - name: mercado-db
-    plan: free            # Entramos gratis para evitar errores de validación.
+    plan: free
     region: oregon
     databaseName: mercado_db
     user: mercado_user
@@ -9,7 +9,7 @@ services:
   - type: web
     name: mercado-local
     runtime: docker
-    plan: starter         
+    plan: starter
     region: oregon
     numInstances: 1
     healthCheckPath: /
@@ -24,11 +24,11 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
-      - key: APP_URL
-        sync: false
       - key: APP_KEY
-        generate: true    
-      - key: DATABASE_URL
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
         fromDatabase:
           name: mercado-db
           property: connectionString
