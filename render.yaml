@@ -1,6 +1,6 @@
 databases:
   - name: mercado-db
-    plan: free           # Usamos 'free' para que pase la validación. Luego lo subimos en la web.
+    plan: free            # Ponemos free para que pase la validación (luego lo mejoras en la web)
     region: oregon
     databaseName: mercado_db
     user: mercado_user
@@ -9,7 +9,7 @@ services:
   - type: web
     name: mercado-local
     runtime: docker
-    plan: starter        # Este SÍ funciona para el servidor web
+    plan: starter         # Para el servicio WEB, 'starter' SÍ funciona ($7/mes)
     region: oregon
     numInstances: 1
     healthCheckPath: /
@@ -27,7 +27,7 @@ services:
       - key: APP_URL
         sync: false
       - key: APP_KEY
-        generate: true    # <--- CORREGIDO: 'generate' en lugar de 'generateValue'
+        generate: true    # <--- CORREGIDO: Es 'generate', no 'generateValue'
       - key: DATABASE_URL
         fromDatabase:
           name: mercado-db
